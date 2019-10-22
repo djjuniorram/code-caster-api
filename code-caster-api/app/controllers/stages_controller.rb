@@ -1,2 +1,0 @@
-class StagesController < ApplicationController
-end

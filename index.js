@@ -1,3 +1,5 @@
+
+
 function preload() {
   // this.load.image(
   //   "bug1",
@@ -12,10 +14,7 @@ function preload() {
   //   "https://s3.amazonaws.com/codecademy-content/courses/learn-phaser/physics/bug_3.png"
   // );
   this.load.image("fire", "assets/fire1.png");
-  this.load.image(
-    "platform",
-    "https://s3.amazonaws.com/codecademy-content/courses/learn-phaser/physics/platform.png"
-  );
+  this.load.image("platform","../assets/platform.png");
   this.load.image("monster", "assets/image.png");
   this.load.image("wizard", "assets/wizard_right.png");
   this.load.image("castle", "assets/castle_background.jpg");
@@ -30,8 +29,8 @@ const gameState = {
 
 function create() {
   this.add.image(400, 300, "castle");
-  gameState.player = this.physics.add.sprite(600, 200, "monster").setScale(0.5);
-  gameState.player2 = this.physics.add
+  this.player = this.physics.add.sprite(600, 200, "monster").setScale(0.5);
+  this.player2 = this.physics.add
     .sprite(100, 300, "wizard")
     .setScale(0.75);
 
@@ -55,55 +54,44 @@ function create() {
   this.monsterBar = this.add.image(550, 550, "monsterBar").setOrigin(0, 0);
   this.monsterBar.displayWidth = 200;
 
-  gameState.player.setCollideWorldBounds(true);
+  this.player.setCollideWorldBounds(true);
 
-  this.physics.add.collider(gameState.player, platforms);
-  this.physics.add.collider(gameState.player2, platforms);
+  this.physics.add.collider(this.player, platforms);
+  this.physics.add.collider(this.player2, platforms);
   gameState.cursors = this.input.keyboard.createCursorKeys();
-  const fires = this.physics.add.group();
-
-  function fireGen() {
-    const xCoord = Math.random() * 450 + 400;
-    fires.create(xCoord, 10, "fire");
-  }
-
-  const fireGenLoop = this.time.addEvent({
-    delay: 50,
-    callback: fireGen,
-    callbackScope: this,
-    repeat: 100
-  });
+  var fires = this.physics.add.group();
 
   this.physics.add.collider(fires, platforms, function(fire) {
     fire.destroy();
       // gameState.score += 10;
     gameState.scoreText.setText(`Score: ${gameState.score}`);
   });
-
-  //   this.physics.add.collider(gameState.player, bugs, () => {
-  //     bugGenLoop.destroy();
-  //     this.physics.pause();
-  //     this.add.text(180, 250, "Game Over", { fontSize: "15px", fill: "#000000" });
-  //     this.add.text(152, 270, "Click to Restart", {
-  //       fontSize: "15px",
-  //       fill: "#000000"
-  //     });
-
-  // // Add your code below:
-  // this.input.on("pointerup", () => {
-  //   gameState.score = 0;
-  //   this.scene.restart();
-  // });
-  //   });
 }
 
 function update() {
+    var fires = this.physics.add.group();
+    function fireGen() {
+        const xCoord = Math.random() * 450 + 400;
+        
+        fires.create(xCoord, 10, "fire");
+      }
   if (gameState.cursors.left.isDown) {
-    gameState.player.setVelocityX(-160);
+    
+      const fireGenLoop = this.time.addEvent({
+        delay: 100,
+        callback: fireGen,
+        callbackScope: this,
+        repeat: 25
+      });
+      this.monsterBar.displayWidth -=25;
+      if(this.monsterBar.displayWidth <= 0){
+          console.log("hello");
+          this.player.kill();
+      }
   } else if (gameState.cursors.right.isDown) {
-    gameState.player.setVelocityX(160);
+    this.player.setVelocityX(160);
   } else {
-    gameState.player.setVelocityX(0);
+    this.player.setVelocityX(0);
   }
 }
 
